@@ -365,8 +365,8 @@ function buildCalendar() {
   const focusCol     = focusCellIdx % 7;         // 2
   const focusRow     = Math.floor(focusCellIdx / 7); // 4
 
-  // Below 1687px: fixed 148px (never shrinks). At 1687px+: scales with vw/7.
-  const cellSize = vw >= 1687 ? Math.ceil(vw / 7) : 148;
+  // Below 1687px: fixed 185px (never shrinks). At 1687px+: scales with vw/7.
+  const cellSize = vw >= 1687 ? Math.ceil(vw / 7) : 185;
 
   let leftOffset;
   if (mobile) {
