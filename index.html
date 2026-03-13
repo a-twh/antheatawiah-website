@@ -260,7 +260,7 @@
     <div class="card-face">
       <div class="card-label">02—Work</div>
       <div class="card-body">
-        <div class="card-text">In previous work, I've<br><span id="work-phrase">designed systems</span><br>at early startups in media, finance, real estate &amp; fashion</div>
+        <div class="card-text">In my previous work, I've<br><span id="work-phrase">designed systems</span><br>at early startups in media, finance, real estate &amp; fashion</div>
       </div>
       <div class="card-footer">Website under [re]construction,<br>will be back March 31</div>
     </div>
@@ -352,7 +352,7 @@ function buildCalendar() {
   grid.innerHTML = '';
 
   const vw     = window.innerWidth;
-  const vh     = window.innerHeight;
+  const vh     = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
   const mobile = vw < 600;
 
   const focusDay   = 31;
@@ -365,7 +365,7 @@ function buildCalendar() {
   const focusCol     = focusCellIdx % 7;         // 2
   const focusRow     = Math.floor(focusCellIdx / 7); // 4
 
-  // Below 1687px: fixed 185px (never shrinks). At 1687px+: scales with vw/7.
+  // Below 1295px (185×7): fixed 185px cells crop off-screen rather than shrink. At 1687px+: scales with vw/7.
   const cellSize = vw >= 1687 ? Math.ceil(vw / 7) : 185;
 
   let leftOffset;
