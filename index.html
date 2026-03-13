@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anthea Tawiah</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpolygon points='20,1 24.4,13.9 38.1,14.1 27.1,22.3 31.2,35.4 20,27.5 8.8,35.4 12.9,22.3 1.9,14.1 15.6,13.9' fill='black'/%3E%3C/svg%3E">
+  <meta property="og:title" content="Anthea Tawiah" />
+  <meta property="og:description" content="Anthea's website is under [re]construction — will be back March 31" />
+  <meta property="og:image" content="og-image.svg" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Anthea Tawiah" />
+  <meta name="twitter:description" content="Anthea's website is under [re]construction — will be back March 31" />
+  <meta name="twitter:image" content="og-image.svg" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpolygon points='20,1 24.4,13.9 38.1,14.1 27.1,22.3 31.2,35.4 20,27.5 8.8,35.4 12.9,22.3 1.9,14.1 15.6,13.9' fill='black'/%3E%3C/svg%3E") 20 20, auto !important; }
+
+    :root {
+      --yellow: #FFE783;
+      --green:  #A5CEAD;
+      --blue:   #85ADFF;
+      --orange: #F79C73;
+      --bg:        #EDEAE4;   /* warm off-white from screenshot */
+      --cal-stroke: rgba(180,174,164,0.6); /* soft warm grey lines */
+      --cal-text:   rgba(150,144,136,0.9); /* muted warm grey numbers */
+      --font: 'PP Neue Montreal', 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: var(--font);
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ─── CALENDAR ─── */
+    #calendar {
+      position: fixed;
+      /* On desktop: fill whole viewport */
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    #cal-grid {
+      position: absolute;
+      display: grid;
+      /* columns + rows set entirely by JS */
+    }
+
+    .cal-cell {
+      position: relative;
+      border-right: 1px solid var(--cal-stroke);
+      border-bottom: 1px solid var(--cal-stroke);
+      /* aspect-ratio enforced by JS via explicit width/height */
+    }
+    .cal-cell.last-col { border-right: none; }
+    .cal-cell.last-row { border-bottom: none; }
+
+    .cal-num {
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      color: var(--cal-text);
+      font-family: var(--font);
+      font-size: 20px;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    /* Today circle — inverted */
+    .cal-cell.today .cal-num {
+      width: 36px;
+      height: 36px;
+      background: #000000;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-size: 18px;
+      top: 8px;
+      left: 10px;
+    }
+
+    /* ─── CARD STACK ─── */
+    #stack {
+      position: relative;
+      z-index: 10;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .card-wrap {
+      position: absolute;
+      inset: 0;
+      will-change: transform;
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 20px;
+      /* border-radius & mask set by JS */
+    }
+
+    /* SVG hole overlay */
+    .card-holes {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .card-label {
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.15;
+      color: #000000;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .card-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-text {
+      font-family: var(--font);
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 0.9;
+      text-align: center;
+      color: #1A1A1A;
+      max-width: 260px;
+    }
+
+    .card-footer {
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.15;
+      color: #000000;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .card-links {
+      display: flex;
+      flex-direction: column;
+      gap: 17px;
+      align-items: center;
+    }
+    .card-links a {
+      font-family: var(--font);
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 0.9;
+      color: #1A1A1A;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .card-links a:hover { opacity: 0.7; }
+
+    #work-phrase {
+      display: inline-block;
+    }
+
+    .card-yellow .card-face { background: var(--yellow); }
+    .card-green  .card-face { background: var(--green); }
+    .card-blue   .card-face { background: var(--blue); }
+    .card-orange .card-face { background: var(--orange); }
+
+    .hint {
+      position: fixed;
+      top: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--cal-text);
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 400;
+      white-space: nowrap;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    /* ─── STAMPS ─── */
+    #stamps {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    @keyframes stamp-press {
+      0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+      50%  { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1.0); opacity: 1; }
+    }
+
+    .stamp {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      pointer-events: none;
+      animation: stamp-press 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+  </style>
+</head>
+<body>
+
+<div id="calendar"><div id="cal-grid"></div></div>
+<div id="stamps"></div>
+
+<div id="stack">
+  <!-- c3: Orange — Contact (bottom) -->
+  <div class="card-wrap card-orange" id="c3">
+    <div class="card-face">
+      <div class="card-label">04—Contact</div>
+      <div class="card-body">
+        <div class="card-links">
+          <a href="mailto:anthea.twh@gmail.com" onclick="event.stopPropagation()">Email</a>
+          <a href="https://www.linkedin.com/in/anthea-tawiah/" target="_blank" onclick="event.stopPropagation()">LinkedIn</a>
+          <a href="https://twitter.com/anthea_irl" target="_blank" onclick="event.stopPropagation()">Twitter</a>
+        </div>
+      </div>
+      <div class="card-footer">Website under [re]construction,<br>will be back March 31</div>
+    </div>
+    <svg class="card-holes" id="holes-c3"></svg>
+  </div>
+
+  <!-- c2: Blue — About -->
+  <div class="card-wrap card-blue" id="c2">
+    <div class="card-face">
+      <div class="card-label">03—About</div>
+      <div class="card-body">
+        <div class="card-text">I work best solving problems, connecting people and creating experiences online &amp; IRL</div>
+      </div>
+      <div class="card-footer">Website under [re]construction,<br>will be back March 31</div>
+    </div>
+    <svg class="card-holes" id="holes-c2"></svg>
+  </div>
+
+  <!-- c1: Green — Work -->
+  <div class="card-wrap card-green" id="c1">
+    <div class="card-face">
+      <div class="card-label">02—Work</div>
+      <div class="card-body">
+        <div class="card-text">In my previous work, I've<br><span id="work-phrase">designed systems</span><br>at early startups in media, finance, real estate &amp; fashion</div>
+      </div>
+      <div class="card-footer">Website under [re]construction,<br>will be back March 31</div>
+    </div>
+    <svg class="card-holes" id="holes-c1"></svg>
+  </div>
+
+  <!-- c0: Yellow — Hello (top) -->
+  <div class="card-wrap card-yellow" id="c0">
+    <div class="card-face">
+      <div class="card-label">01—Hello</div>
+      <div class="card-body">
+        <div class="card-text">Nice to meet you,<br>I'm Anthea</div>
+      </div>
+      <div class="card-footer">Website under [re]construction,<br>will be back March 31</div>
+    </div>
+    <svg class="card-holes" id="holes-c0"></svg>
+  </div>
+</div>
+
+<div class="hint">Click or tap cards to shuffle</div>
+
+<script>
+/* ─── CARD DIMENSIONS ─── */
+function getCardSize() {
+  const mobile = window.innerWidth < 600;
+  return mobile
+    ? { w: 290, h: 390, r: 20 }
+    : { w: 396, h: 301.95, r: 24 };
+}
+
+/* ─── HOLES: true SVG mask punching through the card ─── */
+function buildHoles(svgEl, w, h, r, bgColor) {
+  const holeR  = 16; // 32px diameter
+  const offset = 10 + holeR; // centre = 10px edge gap + radius
+  const corners = [
+    [offset,     offset    ],
+    [w - offset, offset    ],
+    [offset,     h - offset],
+    [w - offset, h - offset],
+  ];
+
+  const uid = svgEl.id;
+  svgEl.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  svgEl.setAttribute('width', w);
+  svgEl.setAttribute('height', h);
+  svgEl.innerHTML = `
+    <defs>
+      <mask id="mask-${uid}">
+        <!-- White = show card; Black = cut out (hole) -->
+        <rect width="${w}" height="${h}" rx="${r}" fill="white"/>
+        ${corners.map(([cx,cy]) =>
+          `<circle cx="${cx}" cy="${cy}" r="${holeR}" fill="black"/>`
+        ).join('')}
+      </mask>
+    </defs>
+    <!-- Transparent overlay that applies the mask to the whole card-face via JS -->
+  `;
+
+  // Apply mask to the sibling .card-face
+  const face = svgEl.previousElementSibling;
+  face.style.borderRadius = '0';
+  face.style.webkitMaskImage = `url(#mask-${uid})`;
+  // Use CSS mask with inline SVG data URL for cross-browser reliability
+  const maskSVG = `<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'>
+    <defs>
+      <mask id='m'>
+        <rect width='${w}' height='${h}' rx='${r}' fill='white'/>
+        ${corners.map(([cx,cy]) =>
+          `<circle cx='${cx}' cy='${cy}' r='${holeR}' fill='black'/>`
+        ).join('')}
+      </mask>
+    </defs>
+    <rect width='${w}' height='${h}' fill='white' mask='url(%23m)'/>
+  </svg>`;
+  const encoded = 'data:image/svg+xml,' + maskSVG.replace(/\n\s*/g, '').replace(/"/g, "'");
+  face.style.webkitMaskImage = `url("${encoded}")`;
+  face.style.maskImage       = `url("${encoded}")`;
+  face.style.webkitMaskSize  = '100% 100%';
+  face.style.maskSize        = '100% 100%';
+  face.style.borderRadius    = `${r}px`; // keep for fallback
+
+  // Clear the SVG — mask is applied via CSS, SVG overlay not needed
+  svgEl.innerHTML = '';
+}
+
+/* ─── CALENDAR ─── */
+function buildCalendar() {
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  const vw     = window.innerWidth;
+  const vh     = window.innerHeight;
+  const mobile = vw < 600;
+
+  const focusDay   = 31;
+  const startDow   = 0;  // March 2026 starts Sunday
+  const totalDays  = 31;
+  const totalCells = 35; // 5 rows × 7
+
+  // Pre-compute focus cell position
+  const focusCellIdx = startDow + focusDay - 1; // 30
+  const focusCol     = focusCellIdx % 7;         // 2
+  const focusRow     = Math.floor(focusCellIdx / 7); // 4
+
+  // Below 1687px: fixed 185px (never shrinks). At 1687px+: scales with vw/7.
+  const cellSize = vw >= 1687 ? Math.ceil(vw / 7) : 185;
+
+  let leftOffset;
+  if (mobile) {
+    // Mobile: centre the 31st column horizontally
+    leftOffset = Math.round(vw / 2 - (focusCol * cellSize + cellSize / 2));
+  } else {
+    // Desktop: centre the grid horizontally (overflows equally on both sides if wider than viewport)
+    leftOffset = Math.round((vw - cellSize * 7) / 2);
+  }
+
+  // Bottom-anchor: last row always flush with viewport bottom
+  const topOffset = vh - cellSize * 5;
+
+  grid.style.width               = (cellSize * 7) + 'px';
+  grid.style.gridTemplateColumns = `repeat(7, ${cellSize}px)`;
+  grid.style.gridTemplateRows    = `repeat(5, ${cellSize}px)`;
+  grid.style.top                 = topOffset + 'px';
+  grid.style.left                = leftOffset + 'px';
+
+  let day = 1;
+  for (let i = 0; i < totalCells; i++) {
+    const cell = document.createElement('div');
+    cell.className    = 'cal-cell';
+    cell.style.width  = cellSize + 'px';
+    cell.style.height = cellSize + 'px';
+
+    const col = i % 7;
+    const row = Math.floor(i / 7);
+    if (col === 6) cell.classList.add('last-col');
+    if (row === 4) cell.classList.add('last-row');
+
+    if (i >= startDow && day <= totalDays) {
+      if (day === focusDay) cell.classList.add('today');
+      const num = document.createElement('div');
+      num.className   = 'cal-num';
+      num.textContent = day;
+      cell.appendChild(num);
+      day++;
+    }
+    grid.appendChild(cell);
+  }
+}
+
+/* ─── CARD STACK ─── */
+function initStack() {
+  const { w: W, h: H, r: R } = getCardSize();
+  const stackEl = document.getElementById('stack');
+  stackEl.style.width  = W + 'px';
+  stackEl.style.height = H + 'px';
+
+  // Build masks for all cards
+  ['c0','c1','c2','c3'].forEach(id => {
+    buildHoles(document.getElementById('holes-' + id), W, H, R);
+  });
+
+  const cards = ['c0','c1','c2','c3'].map(id => document.getElementById(id));
+
+  const positions = [
+    { rotate:  0,  scale: 1,      ty: 0  },
+    { rotate: -4,  scale: 0.975,  ty: 4  },
+    { rotate:  4,  scale: 0.95,   ty: 8  },
+    { rotate: -7,  scale: 0.925,  ty: 12 },
+  ];
+
+  let order     = [0, 1, 2, 3];
+  let animating = false;
+
+  function applyLayout(transition) {
+    order.forEach((cardIdx, pos) => {
+      const card = cards[cardIdx];
+      const p    = positions[pos];
+      card.style.zIndex     = cards.length - pos;
+      card.style.transition = transition
+        ? 'transform 0.65s cubic-bezier(0.34, 1.1, 0.64, 1)'
+        : 'none';
+      card.style.transform  = `rotate(${p.rotate}deg) scale(${p.scale}) translateY(${p.ty}px)`;
+      card.style.opacity    = '1';
+    });
+  }
+
+  applyLayout(false);
+
+  function shuffle() {
+    if (animating) return;
+    animating = true;
+    const topIdx  = order[0];
+    const topCard = cards[topIdx];
+
+    // Slide top card down slightly and shrink — shuffle, not fly-away
+    topCard.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.6,1)';
+    topCard.style.transform  = `rotate(-1deg) scale(0.88) translateY(20px)`;
+    topCard.style.zIndex     = '0';
+
+    setTimeout(() => {
+      order.push(order.shift());
+      const botPos = positions[order.length - 1];
+      topCard.style.transition = 'none';
+      topCard.style.transform  = `rotate(${botPos.rotate}deg) scale(${botPos.scale}) translateY(${botPos.ty}px)`;
+      topCard.style.zIndex     = '1';
+
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        applyLayout(true);
+        setTimeout(() => { animating = false; }, 660);
+      }));
+    }, 330);
+  }
+
+  stackEl.addEventListener('click', e => {
+    if (e.target.tagName === 'A') return;
+    shuffle();
+  });
+
+  let tx = 0, ty2 = 0;
+  stackEl.addEventListener('touchstart', e => {
+    tx = e.touches[0].clientX; ty2 = e.touches[0].clientY;
+  }, { passive: true });
+  stackEl.addEventListener('touchend', e => {
+    if (e.target.tagName === 'A') return;
+    if (Math.abs(e.changedTouches[0].clientX - tx) > 20 ||
+        Math.abs(e.changedTouches[0].clientY - ty2) > 20) shuffle();
+  }, { passive: true });
+}
+
+/* ─── WORK PHRASE CYCLE ─── */
+function initWorkCycle() {
+  const el      = document.getElementById('work-phrase');
+  const phrases = ['designed systems', 'shaped brands', 'crafted interfaces', 'organized events'];
+  let idx = 0;
+
+  setInterval(() => {
+    idx = (idx + 1) % phrases.length;
+    el.textContent = phrases[idx];
+  }, 1750);
+}
+
+/* ─── STAMPS ─── */
+function initStamps() {
+  const container = document.getElementById('stamps');
+  const stack     = document.getElementById('stack');
+
+  document.addEventListener('click', e => {
+    if (stack.contains(e.target)) return; // ignore card stack clicks
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 40 40');
+    svg.classList.add('stamp');
+    svg.style.left = e.clientX + 'px';
+    svg.style.top  = e.clientY + 'px';
+
+    const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    poly.setAttribute('points', '20,1 24.4,13.9 38.1,14.1 27.1,22.3 31.2,35.4 20,27.5 8.8,35.4 12.9,22.3 1.9,14.1 15.6,13.9');
+    poly.setAttribute('fill', 'rgba(180,100,60,0.5)');
+    svg.appendChild(poly);
+
+    container.appendChild(svg);
+  });
+}
+
+/* ─── INIT ─── */
+buildCalendar();
+initStack();
+initWorkCycle();
+initStamps();
+window.addEventListener('resize', () => { buildCalendar(); initStack(); });
+</script>
+</body>
+</html>
