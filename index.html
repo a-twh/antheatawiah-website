@@ -15,6 +15,9 @@
   <meta name="twitter:image" content="https://antheatawiah.com/og-image.png" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500&display=swap" />
   <style>
+    html { visibility: hidden; }
+    html.ready { visibility: visible; }
+
     * {
       margin: 0; padding: 0; box-sizing: border-box;
       cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpolygon points='20,1 24.4,13.9 38.1,14.1 27.1,22.3 31.2,35.4 20,27.5 8.8,35.4 12.9,22.3 1.9,14.1 15.6,13.9' fill='black'/%3E%3C/svg%3E") 20 20, auto !important;
@@ -149,7 +152,7 @@
     }
 
     @media (max-width: 599px) {
-      .card-text { font-size: 18px; max-width: 240px; line-height: 1.1; }
+      .card-text { font-size: 18px; max-width: 240px; line-height: 1.1; font-weight: 500; }
     }
 
     .card-footer {
@@ -384,7 +387,8 @@
     const vh     = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
     const mobile = vw < 600;
 
-    const cellSize = vw >= 1687 ? Math.ceil(vw / 7) : (mobile ? 156 : 185);
+    const portrait = window.innerHeight > window.innerWidth;
+    const cellSize = portrait ? 156 : Math.ceil(vw / 7);
 
     // February 2026: 28 days, starts Sunday (dow 0)
     // Row 0: Feb 1–7, Row 1: Feb 8–14, Row 2: Feb 15–21, Row 3: Feb 22–28
@@ -407,9 +411,9 @@
     const focusCellIdx  = FEB_CELLS + MAR_START_DOW + FOCUS_DAY - 1; // 28 + 0 + 30 = 58
     const focusCol      = focusCellIdx % 7; // 2
 
-    const leftOffset = mobile
+    const leftOffset = portrait
       ? Math.round(vw / 2 - (focusCol * cellSize + cellSize / 2))
-      : Math.round((vw - cellSize * 7) / 2);
+      : 0;
 
     const topOffset = vh - cellSize * TOTAL_ROWS;
 
@@ -655,6 +659,9 @@
       : 'Click or drag cards to shuffle';
   }
   setHint();
+
+  // Reveal page now that everything is sized and ready — prevents flash of broken layout
+  document.documentElement.classList.add('ready');
 
   window.addEventListener('resize', () => { buildCalendar(); initStack(); setHint(); });
 })();
