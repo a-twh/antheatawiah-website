@@ -14,16 +14,19 @@
   <meta name="twitter:description" content="Anthea's website is under [re]construction — will be back March 31" />
   <meta name="twitter:image" content="https://antheatawiah.com/og-image.png" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpolygon points='20,1 24.4,13.9 38.1,14.1 27.1,22.3 31.2,35.4 20,27.5 8.8,35.4 12.9,22.3 1.9,14.1 15.6,13.9' fill='black'/%3E%3C/svg%3E") 20 20, auto !important; }
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpolygon points='20,1 24.4,13.9 38.1,14.1 27.1,22.3 31.2,35.4 20,27.5 8.8,35.4 12.9,22.3 1.9,14.1 15.6,13.9' fill='black'/%3E%3C/svg%3E") 20 20, auto !important;
+    }
 
     :root {
       --yellow: #FFE783;
       --green:  #A5CEAD;
       --blue:   #85ADFF;
       --orange: #F79C73;
-      --bg:        #EDEAE4;   /* warm off-white from screenshot */
-      --cal-stroke: rgba(180,174,164,0.6); /* soft warm grey lines */
-      --cal-text:   rgba(150,144,136,0.9); /* muted warm grey numbers */
+      --bg:          #EDEAE4;
+      --cal-stroke:  rgba(180,174,164,0.6);
+      --cal-text:    rgba(150,144,136,0.9);
       --font: 'PP Neue Montreal', 'Helvetica Neue', Arial, sans-serif;
     }
 
@@ -40,10 +43,9 @@
       justify-content: center;
     }
 
-    /* ─── CALENDAR ─── */
+    /* ── CALENDAR ── */
     #calendar {
       position: fixed;
-      /* On desktop: fill whole viewport */
       inset: 0;
       pointer-events: none;
       z-index: 0;
@@ -53,22 +55,19 @@
     #cal-grid {
       position: absolute;
       display: grid;
-      /* columns + rows set entirely by JS */
     }
 
     .cal-cell {
       position: relative;
       border-right: 1px solid var(--cal-stroke);
       border-bottom: 1px solid var(--cal-stroke);
-      /* aspect-ratio enforced by JS via explicit width/height */
     }
     .cal-cell.last-col { border-right: none; }
     .cal-cell.last-row { border-bottom: none; }
 
     .cal-num {
       position: absolute;
-      top: 14px;
-      left: 16px;
+      top: 14px; left: 16px;
       color: var(--cal-text);
       font-family: var(--font);
       font-size: 20px;
@@ -76,57 +75,58 @@
       line-height: 1;
     }
 
-    /* Today circle — inverted */
+    .cal-num.feb {
+      opacity: 0.35;
+    }
+
     .cal-cell.today .cal-num {
-      width: 36px;
-      height: 36px;
-      background: #000000;
+      width: 36px; height: 36px;
+      background: #000;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--bg);
       font-size: 18px;
-      top: 8px;
-      left: 10px;
+      top: 8px; left: 10px;
     }
 
-    /* ─── CARD STACK ─── */
+    /* ── STACK CONTAINER ── */
     #stack {
       position: relative;
       z-index: 10;
-      cursor: pointer;
       user-select: none;
+      flex-shrink: 0;
     }
 
+    /* ── CARDS ── */
+    /* All sizing done 100% in JS — no CSS dimensions on cards */
     .card-wrap {
       position: absolute;
-      inset: 0;
+      top: 0; left: 0;
       will-change: transform;
     }
 
     .card-face {
       position: absolute;
-      inset: 0;
+      top: 0; left: 0;
       display: flex;
       flex-direction: column;
       padding: 24px 20px;
-      /* border-radius & mask set by JS */
+      overflow: hidden;
     }
 
-    /* SVG hole overlay */
     .card-holes {
       position: absolute;
-      inset: 0;
+      top: 0; left: 0;
       pointer-events: none;
     }
 
     .card-label {
       font-family: var(--font);
-      font-size: 12px;
-      font-weight: 400;
+      font-size: 12px; font-weight: 400;
       line-height: 1.15;
-      color: #000000;
+      color: #000;
       text-align: center;
       flex-shrink: 0;
     }
@@ -140,8 +140,7 @@
 
     .card-text {
       font-family: var(--font);
-      font-size: 24px;
-      font-weight: 500;
+      font-size: 24px; font-weight: 500;
       line-height: 0.9;
       text-align: center;
       color: #1A1A1A;
@@ -150,10 +149,9 @@
 
     .card-footer {
       font-family: var(--font);
-      font-size: 12px;
-      font-weight: 400;
+      font-size: 12px; font-weight: 400;
       line-height: 1.15;
-      color: #000000;
+      color: #000;
       text-align: center;
       flex-shrink: 0;
     }
@@ -166,39 +164,82 @@
     }
     .card-links a {
       font-family: var(--font);
-      font-size: 24px;
-      font-weight: 500;
+      font-size: 24px; font-weight: 500;
       line-height: 0.9;
       color: #1A1A1A;
       text-decoration: none;
-      transition: opacity 0.2s;
+      transition: color 0.2s;
     }
-    .card-links a:hover { opacity: 0.7; }
+    .card-links a:hover { color: #9B2318; }
 
     #work-phrase {
       display: inline-block;
+      color: #2D6A4F;
     }
 
     .card-yellow .card-face { background: var(--yellow); }
-    .card-green  .card-face { background: var(--green); }
-    .card-blue   .card-face { background: var(--blue); }
+    .card-green  .card-face { background: var(--green);  }
+    .card-blue   .card-face { background: var(--blue);   }
     .card-orange .card-face { background: var(--orange); }
 
+    /* ── HINT ── */
     .hint {
       position: fixed;
-      top: 64px;
-      left: 50%;
+      top: 64px; left: 50%;
       transform: translateX(-50%);
       color: var(--cal-text);
       font-family: var(--font);
-      font-size: 12px;
-      font-weight: 400;
+      font-size: 12px; font-weight: 400;
       white-space: nowrap;
-      z-index: 20;
+      z-index: 5;
       pointer-events: none;
     }
 
-    /* ─── STAMPS ─── */
+    @media (max-width: 599px) {
+      .hint {
+        top: 0;
+        left: 0;
+        right: 0;
+        transform: none;
+        width: 100%;
+        background: var(--cal-text);
+        color: var(--bg);
+        padding: 16px 52px;
+        border-radius: 0;
+        text-align: center;
+        font-size: 12px;
+        z-index: 30;
+      }
+    }
+
+    .hint-close {
+      display: none;
+    }
+
+    @media (max-width: 599px) {
+      .hint-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 28px;
+        height: 28px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        color: var(--bg);
+        font-size: 13px;
+        line-height: 1;
+        pointer-events: all;
+        font-family: var(--font);
+      }
+    }
+
+    /* ── STAMPS ── */
     #stamps {
       position: fixed;
       inset: 0;
@@ -207,17 +248,16 @@
     }
 
     @keyframes stamp-press {
-      0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-      50%  { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-      100% { transform: translate(-50%, -50%) scale(1.0); opacity: 1; }
+      0%   { transform: translate(-50%,-50%) scale(0.5); opacity: 0; }
+      50%  { transform: translate(-50%,-50%) scale(1.2); opacity: 1; }
+      100% { transform: translate(-50%,-50%) scale(1.0); opacity: 1; }
     }
 
     .stamp {
       position: absolute;
-      width: 40px;
-      height: 40px;
+      width: 40px; height: 40px;
       pointer-events: none;
-      animation: stamp-press 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      animation: stamp-press 0.3s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
     }
   </style>
 </head>
@@ -233,7 +273,7 @@
       <div class="card-label">04—Contact</div>
       <div class="card-body">
         <div class="card-links">
-          <a href="mailto:anthea.twh@gmail.com" onclick="event.stopPropagation()">Email</a>
+          <a href="/cdn-cgi/l/email-protection#f79699839f9296d983809fb7909a969e9bd994989a" onclick="event.stopPropagation()">Email</a>
           <a href="https://www.linkedin.com/in/anthea-tawiah/" target="_blank" onclick="event.stopPropagation()">LinkedIn</a>
           <a href="https://twitter.com/anthea_irl" target="_blank" onclick="event.stopPropagation()">Twitter</a>
         </div>
@@ -280,257 +320,339 @@
   </div>
 </div>
 
-<div class="hint">Click or tap cards to shuffle</div>
+<div class="hint" id="hint"><button class="hint-close" id="hint-close" onclick="document.getElementById('hint').style.display='none'">✕</button></div>
 
-<script>
-/* ─── CARD DIMENSIONS ─── */
-function getCardSize() {
-  const mobile = window.innerWidth < 600;
-  return mobile
-    ? { w: 290, h: 390, r: 20 }
-    : { w: 396, h: 301.95, r: 24 };
-}
-
-/* ─── HOLES: true SVG mask punching through the card ─── */
-function buildHoles(svgEl, w, h, r, bgColor) {
-  const holeR  = 16; // 32px diameter
-  const offset = 10 + holeR; // centre = 10px edge gap + radius
-  const corners = [
-    [offset,     offset    ],
-    [w - offset, offset    ],
-    [offset,     h - offset],
-    [w - offset, h - offset],
-  ];
-
-  const uid = svgEl.id;
-  svgEl.setAttribute('viewBox', `0 0 ${w} ${h}`);
-  svgEl.setAttribute('width', w);
-  svgEl.setAttribute('height', h);
-  svgEl.innerHTML = `
-    <defs>
-      <mask id="mask-${uid}">
-        <!-- White = show card; Black = cut out (hole) -->
-        <rect width="${w}" height="${h}" rx="${r}" fill="white"/>
-        ${corners.map(([cx,cy]) =>
-          `<circle cx="${cx}" cy="${cy}" r="${holeR}" fill="black"/>`
-        ).join('')}
-      </mask>
-    </defs>
-    <!-- Transparent overlay that applies the mask to the whole card-face via JS -->
-  `;
-
-  // Apply mask to the sibling .card-face
-  const face = svgEl.previousElementSibling;
-  face.style.borderRadius = '0';
-  face.style.webkitMaskImage = `url(#mask-${uid})`;
-  // Use CSS mask with inline SVG data URL for cross-browser reliability
-  const maskSVG = `<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'>
-    <defs>
-      <mask id='m'>
-        <rect width='${w}' height='${h}' rx='${r}' fill='white'/>
-        ${corners.map(([cx,cy]) =>
-          `<circle cx='${cx}' cy='${cy}' r='${holeR}' fill='black'/>`
-        ).join('')}
-      </mask>
-    </defs>
-    <rect width='${w}' height='${h}' fill='white' mask='url(%23m)'/>
-  </svg>`;
-  const encoded = 'data:image/svg+xml,' + maskSVG.replace(/\n\s*/g, '').replace(/"/g, "'");
-  face.style.webkitMaskImage = `url("${encoded}")`;
-  face.style.maskImage       = `url("${encoded}")`;
-  face.style.webkitMaskSize  = '100% 100%';
-  face.style.maskSize        = '100% 100%';
-  face.style.borderRadius    = `${r}px`; // keep for fallback
-
-  // Clear the SVG — mask is applied via CSS, SVG overlay not needed
-  svgEl.innerHTML = '';
-}
-
-/* ─── CALENDAR ─── */
-function buildCalendar() {
-  const grid = document.getElementById('cal-grid');
-  grid.innerHTML = '';
-
-  const vw     = window.innerWidth;
-  const vh     = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
-  const mobile = vw < 600;
-
-  const focusDay   = 31;
-  const startDow   = 0;  // March 2026 starts Sunday
-  const totalDays  = 31;
-  const totalCells = 35; // 5 rows × 7
-
-  // Pre-compute focus cell position
-  const focusCellIdx = startDow + focusDay - 1; // 30
-  const focusCol     = focusCellIdx % 7;         // 2
-  const focusRow     = Math.floor(focusCellIdx / 7); // 4
-
-  // Below 1295px (185×7): fixed 185px cells crop off-screen rather than shrink. At 1687px+: scales with vw/7.
-  const cellSize = vw >= 1687 ? Math.ceil(vw / 7) : 185;
-
-  let leftOffset;
-  if (mobile) {
-    // Mobile: centre the 31st column horizontally
-    leftOffset = Math.round(vw / 2 - (focusCol * cellSize + cellSize / 2));
-  } else {
-    // Desktop: centre the grid horizontally (overflows equally on both sides if wider than viewport)
-    leftOffset = Math.round((vw - cellSize * 7) / 2);
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+(function () {
+  /* ── SIZES ── */
+  function getCardSize() {
+    return window.innerWidth < 600
+      ? { w: 290,  h: 340,    r: 20 }
+      : { w: 396,  h: 301.95, r: 24 };
   }
 
-  // Bottom-anchor: last row always flush with viewport bottom
-  const topOffset = vh - cellSize * 5;
+  /* ── APPLY SIZE TO A CARD ── */
+  function sizeCard(id, w, h, r) {
+    const wrap = document.getElementById(id);
+    const face = wrap.querySelector('.card-face');
+    const svg  = wrap.querySelector('.card-holes');
 
-  grid.style.width               = (cellSize * 7) + 'px';
-  grid.style.gridTemplateColumns = `repeat(7, ${cellSize}px)`;
-  grid.style.gridTemplateRows    = `repeat(5, ${cellSize}px)`;
-  grid.style.top                 = topOffset + 'px';
-  grid.style.left                = leftOffset + 'px';
+    wrap.style.width  = w + 'px';
+    wrap.style.height = h + 'px';
+    face.style.width  = w + 'px';
+    face.style.height = h + 'px';
+    svg.style.width   = w + 'px';
+    svg.style.height  = h + 'px';
 
-  let day = 1;
-  for (let i = 0; i < totalCells; i++) {
-    const cell = document.createElement('div');
-    cell.className    = 'cal-cell';
-    cell.style.width  = cellSize + 'px';
-    cell.style.height = cellSize + 'px';
+    /* SVG mask for punched holes */
+    const holeR = 16;
+    const off   = 10 + holeR;
+    const corners = [
+      [off,     off    ],
+      [w - off, off    ],
+      [off,     h - off],
+      [w - off, h - off],
+    ];
+    const maskSVG = `<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'>`
+      + `<defs><mask id='m'>`
+      + `<rect width='${w}' height='${h}' rx='${r}' fill='white'/>`
+      + corners.map(([cx,cy]) => `<circle cx='${cx}' cy='${cy}' r='${holeR}' fill='black'/>`).join('')
+      + `</mask></defs>`
+      + `<rect width='${w}' height='${h}' fill='white' mask='url(%23m)'/>`
+      + `</svg>`;
+    const url = 'data:image/svg+xml,' + encodeURIComponent(maskSVG);
 
-    const col = i % 7;
-    const row = Math.floor(i / 7);
-    if (col === 6) cell.classList.add('last-col');
-    if (row === 4) cell.classList.add('last-row');
+    face.style.borderRadius    = r + 'px';
+    face.style.webkitMaskImage = `url("${url}")`;
+    face.style.maskImage       = `url("${url}")`;
+    face.style.webkitMaskSize  = '100% 100%';
+    face.style.maskSize        = '100% 100%';
+    svg.innerHTML = '';
+  }
 
-    if (i >= startDow && day <= totalDays) {
-      if (day === focusDay) cell.classList.add('today');
+  /* ── CALENDAR ── */
+  function buildCalendar() {
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = '';
+
+    const vw     = window.innerWidth;
+    const vh     = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
+    const mobile = vw < 600;
+
+    const cellSize = vw >= 1687 ? Math.ceil(vw / 7) : (mobile ? 156 : 185);
+
+    // February 2026: 28 days, starts Sunday (dow 0)
+    // Row 0: Feb 1–7, Row 1: Feb 8–14, Row 2: Feb 15–21, Row 3: Feb 22–28
+    // No empty first row since Feb starts on Sunday, no partial last row needed
+    // We only render 4 rows of Feb (days 1–28 fill exactly 4 rows)
+    const FEB_START_DOW = 0;
+    const FEB_DAYS      = 28;
+    const FEB_ROWS      = 4; // 28 days / 7 = exactly 4 rows, no empty rows
+    const FEB_CELLS     = FEB_ROWS * 7; // 28
+
+    // March 2026: 31 days, starts Sunday (dow 0)
+    const MAR_START_DOW = 0;
+    const MAR_DAYS      = 31;
+    const MAR_CELLS     = 35; // 5 rows
+
+    const FOCUS_DAY     = 31;
+    const TOTAL_ROWS    = FEB_ROWS + 5; // 4 + 5 = 9 rows total
+
+    // Focus cell: March 31 is at grid index FEB_CELLS + MAR_START_DOW + FOCUS_DAY - 1
+    const focusCellIdx  = FEB_CELLS + MAR_START_DOW + FOCUS_DAY - 1; // 28 + 0 + 30 = 58
+    const focusCol      = focusCellIdx % 7; // 2
+
+    const leftOffset = mobile
+      ? Math.round(vw / 2 - (focusCol * cellSize + cellSize / 2))
+      : Math.round((vw - cellSize * 7) / 2);
+
+    const topOffset = vh - cellSize * TOTAL_ROWS;
+
+    grid.style.width               = (cellSize * 7) + 'px';
+    grid.style.gridTemplateColumns = `repeat(7, ${cellSize}px)`;
+    grid.style.gridTemplateRows    = `repeat(${TOTAL_ROWS}, ${cellSize}px)`;
+    grid.style.top                 = topOffset + 'px';
+    grid.style.left                = leftOffset + 'px';
+
+    // ── February cells (exactly 4 rows = 28 cells, no empty rows) ──
+    let febDay = 1;
+    for (let i = 0; i < FEB_CELLS; i++) {
+      const cell = document.createElement('div');
+      cell.className    = 'cal-cell';
+      cell.style.width  = cellSize + 'px';
+      cell.style.height = cellSize + 'px';
+
+      const col = i % 7;
+      if (col === 6) cell.classList.add('last-col');
+
+      // All 28 cells have a date (Feb starts Sunday, fills exactly 4 rows)
       const num = document.createElement('div');
-      num.className   = 'cal-num';
-      num.textContent = day;
+      num.className   = 'cal-num feb';
+      num.textContent = febDay;
       cell.appendChild(num);
-      day++;
+      febDay++;
+      grid.appendChild(cell);
     }
-    grid.appendChild(cell);
+
+    // ── March cells ──
+    let marDay = 1;
+    for (let i = 0; i < MAR_CELLS; i++) {
+      const cell = document.createElement('div');
+      cell.className    = 'cal-cell';
+      cell.style.width  = cellSize + 'px';
+      cell.style.height = cellSize + 'px';
+
+      const col = i % 7;
+      const row = Math.floor(i / 7);
+      if (col === 6) cell.classList.add('last-col');
+      if (row === 4) cell.classList.add('last-row');
+
+      if (i >= MAR_START_DOW && marDay <= MAR_DAYS) {
+        if (marDay === FOCUS_DAY) cell.classList.add('today');
+        const num = document.createElement('div');
+        num.className   = 'cal-num';
+        num.textContent = marDay;
+        cell.appendChild(num);
+        marDay++;
+      }
+      grid.appendChild(cell);
+    }
   }
-}
 
-/* ─── CARD STACK ─── */
-function initStack() {
-  const { w: W, h: H, r: R } = getCardSize();
-  const stackEl = document.getElementById('stack');
-  stackEl.style.width  = W + 'px';
-  stackEl.style.height = H + 'px';
+  /* ── CARD STACK ── */
+  function initStack() {
+    const { w: W, h: H, r: R } = getCardSize();
 
-  // Build masks for all cards
-  ['c0','c1','c2','c3'].forEach(id => {
-    buildHoles(document.getElementById('holes-' + id), W, H, R);
-  });
+    /* Size the stack container */
+    const stackEl = document.getElementById('stack');
+    stackEl.style.width  = W + 'px';
+    stackEl.style.height = H + 'px';
 
-  const cards = ['c0','c1','c2','c3'].map(id => document.getElementById(id));
+    /* Size + mask all four cards */
+    ['c0', 'c1', 'c2', 'c3'].forEach(id => sizeCard(id, W, H, R));
 
-  const positions = [
-    { rotate:  0,  scale: 1,      ty: 0  },
-    { rotate: -4,  scale: 0.975,  ty: 4  },
-    { rotate:  4,  scale: 0.95,   ty: 8  },
-    { rotate: -7,  scale: 0.925,  ty: 12 },
-  ];
+    const cards = ['c0','c1','c2','c3'].map(id => document.getElementById(id));
 
-  let order     = [0, 1, 2, 3];
-  let animating = false;
+    /* Resting positions — messy, tilted stack */
+    const POS = [
+      { rotate:  0,   scale: 1,      ty: 0  },
+      { rotate: -4,   scale: 0.975,  ty: 4  },
+      { rotate:  4,   scale: 0.95,   ty: 8  },
+      { rotate: -7,   scale: 0.925,  ty: 12 },
+    ];
 
-  function applyLayout(transition) {
-    order.forEach((cardIdx, pos) => {
-      const card = cards[cardIdx];
-      const p    = positions[pos];
-      card.style.zIndex     = cards.length - pos;
-      card.style.transition = transition
-        ? 'transform 0.65s cubic-bezier(0.34, 1.1, 0.64, 1)'
-        : 'none';
-      card.style.transform  = `rotate(${p.rotate}deg) scale(${p.scale}) translateY(${p.ty}px)`;
-      card.style.opacity    = '1';
+    function posT(p) {
+      return `rotate(${POS[p].rotate}deg) scale(${POS[p].scale}) translateY(${POS[p].ty}px)`;
+    }
+
+    let order     = [0, 1, 2, 3]; // order[0] = top card index
+    let animating = false;
+
+    function applyLayout(animated) {
+      order.forEach((ci, pos) => {
+        const c = cards[ci];
+        c.style.zIndex     = cards.length - pos;
+        c.style.transition = animated ? 'transform 0.65s cubic-bezier(0.34,1.1,0.64,1)' : 'none';
+        c.style.transform  = posT(pos);
+      });
+    }
+
+    applyLayout(false);
+
+    /* Simultaneous shuffle: all 4 cards move at once */
+    function shuffle() {
+      if (animating) return;
+      animating = true;
+
+      const topCI   = order[0];
+      const topCard = cards[topCI];
+      const DUR     = '650ms';
+      const EASE    = 'cubic-bezier(0.34,1.1,0.64,1)';
+
+      topCard.style.zIndex     = '0';
+      topCard.style.transition = `transform ${DUR} ${EASE}`;
+      topCard.style.transform  = posT(3);
+
+      order.slice(1).forEach((ci, i) => {
+        const c = cards[ci];
+        c.style.transition = `transform ${DUR} ${EASE}`;
+        c.style.zIndex     = cards.length - i;
+        c.style.transform  = posT(i);
+      });
+
+      setTimeout(() => {
+        order.push(order.shift());
+        order.forEach((ci, pos) => {
+          cards[ci].style.transition = 'none';
+          cards[ci].style.zIndex     = cards.length - pos;
+        });
+        animating = false;
+      }, 660);
+    }
+
+    /* Drag */
+    let dragging = false;
+    let startX = 0, startY = 0, currX = 0, currY = 0;
+    const THRESH = 80;
+
+    function topCard() { return cards[order[0]]; }
+
+    function dragStart(cx, cy) {
+      if (animating) return;
+      dragging = true;
+      startX = currX = cx;
+      startY = currY = cy;
+      const tc = topCard();
+      tc.style.transition = 'none';
+      tc.style.zIndex     = String(cards.length + 1);
+    }
+
+    function dragMove(cx, cy) {
+      if (!dragging) return;
+      currX = cx; currY = cy;
+      const dx   = (cx - startX) * 0.4;
+      const dy   = (cy - startY) * 0.4;
+      const tilt = Math.max(-8, Math.min(8, (cx - startX) / 20));
+      topCard().style.transform = `rotate(${tilt}deg) scale(1.02) translate(${dx}px,${dy}px)`;
+    }
+
+    function dragEnd() {
+      if (!dragging) return;
+      dragging = false;
+      const dist = Math.hypot(currX - startX, currY - startY);
+      if (dist > THRESH) {
+        shuffle();
+      } else {
+        const tc = topCard();
+        tc.style.transition = 'transform 0.4s cubic-bezier(0.34,1.4,0.64,1)';
+        tc.style.transform  = posT(0);
+        tc.style.zIndex     = String(cards.length);
+      }
+    }
+
+    /* Mouse */
+    stackEl.addEventListener('mousedown', e => {
+      if (e.target.tagName === 'A') return;
+      dragStart(e.clientX, e.clientY);
+    });
+    window.addEventListener('mousemove', e => dragMove(e.clientX, e.clientY));
+    window.addEventListener('mouseup',   () => dragEnd());
+
+    /* Touch */
+    stackEl.addEventListener('touchstart', e => {
+      if (e.target.tagName === 'A') return;
+      dragStart(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    window.addEventListener('touchmove', e => {
+      dragMove(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    window.addEventListener('touchend', e => {
+      currX = e.changedTouches[0].clientX;
+      currY = e.changedTouches[0].clientY;
+      dragEnd();
+    });
+
+    /* Click with no drag */
+    stackEl.addEventListener('click', e => {
+      if (e.target.tagName === 'A') return;
+      if (Math.hypot(currX - startX, currY - startY) < 5) shuffle();
     });
   }
 
-  applyLayout(false);
-
-  function shuffle() {
-    if (animating) return;
-    animating = true;
-    const topIdx  = order[0];
-    const topCard = cards[topIdx];
-
-    // Slide top card down slightly and shrink — shuffle, not fly-away
-    topCard.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.6,1)';
-    topCard.style.transform  = `rotate(-1deg) scale(0.88) translateY(20px)`;
-    topCard.style.zIndex     = '0';
-
-    setTimeout(() => {
-      order.push(order.shift());
-      const botPos = positions[order.length - 1];
-      topCard.style.transition = 'none';
-      topCard.style.transform  = `rotate(${botPos.rotate}deg) scale(${botPos.scale}) translateY(${botPos.ty}px)`;
-      topCard.style.zIndex     = '1';
-
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        applyLayout(true);
-        setTimeout(() => { animating = false; }, 660);
-      }));
-    }, 330);
+  /* ── CYCLING PHRASE ── */
+  function initWorkCycle() {
+    const el      = document.getElementById('work-phrase');
+    const phrases = ['designed systems','shaped brands','crafted interfaces','organized events'];
+    let idx = 0;
+    setInterval(() => {
+      idx = (idx + 1) % phrases.length;
+      el.textContent = phrases[idx];
+    }, 1750);
   }
 
-  stackEl.addEventListener('click', e => {
-    if (e.target.tagName === 'A') return;
-    shuffle();
-  });
+  /* ── STAMPS ── */
+  function initStamps() {
+    const container = document.getElementById('stamps');
+    const stack     = document.getElementById('stack');
+    document.addEventListener('click', e => {
+      if (stack.contains(e.target)) return;
+      const svg  = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 40 40');
+      svg.classList.add('stamp');
+      svg.style.left = e.clientX + 'px';
+      svg.style.top  = e.clientY + 'px';
+      const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      poly.setAttribute('points', '20,1 24.4,13.9 38.1,14.1 27.1,22.3 31.2,35.4 20,27.5 8.8,35.4 12.9,22.3 1.9,14.1 15.6,13.9');
+      poly.setAttribute('fill', 'rgba(180,100,60,0.5)');
+      svg.appendChild(poly);
+      container.appendChild(svg);
+    });
+  }
 
-  let tx = 0, ty2 = 0;
-  stackEl.addEventListener('touchstart', e => {
-    tx = e.touches[0].clientX; ty2 = e.touches[0].clientY;
-  }, { passive: true });
-  stackEl.addEventListener('touchend', e => {
-    if (e.target.tagName === 'A') return;
-    if (Math.abs(e.changedTouches[0].clientX - tx) > 20 ||
-        Math.abs(e.changedTouches[0].clientY - ty2) > 20) shuffle();
-  }, { passive: true });
-}
+  /* ── INIT ── */
+  buildCalendar();
+  initStack();
+  initStack();
+  initWorkCycle();
+  initStamps();
 
-/* ─── WORK PHRASE CYCLE ─── */
-function initWorkCycle() {
-  const el      = document.getElementById('work-phrase');
-  const phrases = ['designed systems', 'shaped brands', 'crafted interfaces', 'organized events'];
-  let idx = 0;
+  /* ── HINT TEXT ── */
+  const hint = document.getElementById('hint');
+  const hintClose = document.getElementById('hint-close');
+  function setHint() {
+    const isMobile = window.innerWidth < 600;
+    // Set text as first text node, preserving the close button
+    const textNode = hint.firstChild && hint.firstChild.nodeType === 3
+      ? hint.firstChild
+      : hint.insertBefore(document.createTextNode(''), hint.firstChild);
+    textNode.textContent = isMobile
+      ? 'Tap or drag cards to shuffle'
+      : 'Click or drag cards to shuffle';
+  }
+  setHint();
 
-  setInterval(() => {
-    idx = (idx + 1) % phrases.length;
-    el.textContent = phrases[idx];
-  }, 1750);
-}
-
-/* ─── STAMPS ─── */
-function initStamps() {
-  const container = document.getElementById('stamps');
-  const stack     = document.getElementById('stack');
-
-  document.addEventListener('click', e => {
-    if (stack.contains(e.target)) return; // ignore card stack clicks
-
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 40 40');
-    svg.classList.add('stamp');
-    svg.style.left = e.clientX + 'px';
-    svg.style.top  = e.clientY + 'px';
-
-    const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-    poly.setAttribute('points', '20,1 24.4,13.9 38.1,14.1 27.1,22.3 31.2,35.4 20,27.5 8.8,35.4 12.9,22.3 1.9,14.1 15.6,13.9');
-    poly.setAttribute('fill', 'rgba(180,100,60,0.5)');
-    svg.appendChild(poly);
-
-    container.appendChild(svg);
-  });
-}
-
-/* ─── INIT ─── */
-buildCalendar();
-initStack();
-initWorkCycle();
-initStamps();
-window.addEventListener('resize', () => { buildCalendar(); initStack(); });
+  window.addEventListener('resize', () => { buildCalendar(); initStack(); setHint(); });
+})();
 </script>
 </body>
 </html>
